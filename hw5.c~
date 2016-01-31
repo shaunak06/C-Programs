@@ -1,0 +1,129 @@
+#include <stdio.h>
+
+#include <stdlib.h>
+
+int main(int argc,char* argv[])
+{
+  char c1,c2,c3;
+  int count=0;
+  if(argc != 4)
+    {
+      puts("You did not enter the correct arguments please try again");
+      exit(1);
+    }
+  
+  if((strcmp(argv[1],"d"))!=0 && (strcmp(argv[1],"z"))!=0)
+    {
+      puts("You did not enter the correct arguments please try again");
+      exit(1);
+    }
+  
+  if(argc != 4)
+    {
+      puts("You did not enter the correct arguments please try again");
+      exit(1);
+    }
+  
+  FILE *f1;
+  f1 = fopen(argv[2],"r");
+  if(f1==NULL)
+    {
+      printf("Cannot open input file %s\n",argv[2]);
+      exit(1);
+    }
+  FILE *f2;
+  f2 = fopen(argv[3],"w");
+  if(f2==NULL)
+    {
+      printf("Cannot open output file %s\n",argv[3]);
+      exit(1);
+    }
+  printf("argv 1: %s\n",argv[1]);
+  //if the user specifies they want to get the file compressed
+  if(strcmp(argv[1],"z") == 0)
+    {
+      c1 = fgetc(f1);
+      //printf("c1: %c\n",c1);
+      if(c1 == EOF)
+	{
+	  puts("Input file is empty");
+	  fclose(f1);
+	  fclose(f2);
+	  exit(1);
+	}
+
+      count=0;
+      while((c2=fgetc(f1))!= EOF)
+	{
+	  //printf("c2 in loop: %c\n",c2);
+	  if(c1==c2)
+	    {
+	      count++;
+	    }
+	  else
+	    {
+	      fputc(c1,f2);
+	      if(count >0)
+		{
+		  fputc(c1,f2);
+		  fputc((count-1),f2);
+		  count = 0;
+		}
+	      c1=c2;   
+	    }	    
+	}
+      if(count !=0)
+	{
+	  fputc(c1,f2);
+	  fputc(c1,f2);
+	  fputc((count-1),f2);
+	}
+      else
+	{
+	  fputc(c1,f2);
+	}
+      fclose(f1);
+      fclose(f2);
+      return 0;
+    }
+  else if((strcmp(argv[1],"d"))==0)
+    {
+      c1=fgetc(f1);
+      if(c1==EOF)
+	{
+	  puts("Input file is empty");
+	  fclose(f1);
+	  fclose(f2);
+	  exit(1);
+	}
+      while((c2=fgetc(f1)) != EOF)
+	{
+	  if(c1==c2)
+	    {
+	      int s=fgetc(f1);
+	      printf("Number of times %c occurs: %d\n",c1,s);
+	      fputc(c1,f2);
+	      fputc(c1,f2);
+	      while(s>0)
+		{
+		  fputc(c1,f2);	    
+		  s--;
+		}
+	     if((c1=fgetc(f1))==EOF)
+	       {
+		 return 0;
+	       }
+	    }
+	  else
+	    {
+	      fputc(c1,f2);
+	      c1=c2;
+	    }
+	}
+      fputc(c1,f2);
+      fclose(f1);
+      fclose(f2);
+      return 0;
+    }
+}
+

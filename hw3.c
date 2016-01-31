@@ -1,0 +1,104 @@
+#include <stdio.h>
+#define SIZE 10
+
+int main(void)
+{
+  int k,iterations,i,j,iused,errorgood=0; 
+  float current[SIZE][SIZE], previous[SIZE][SIZE], epsilon,top,right,left,bottom;
+  printf("Number of iterations?\n");
+  scanf("%d", &iterations);
+  if(iterations < 0)
+    {
+      puts("Error");
+      return 0;
+    }
+  puts("epsilon?");
+  scanf("%f", &epsilon);
+  if(epsilon > .01)
+    {
+      puts("Error");
+      return 0;
+    }
+  for(i=0;i<SIZE;i++)//code that initializes the two arrays
+    {
+      for(j=0;j<SIZE;j++);
+      {
+	if(i == 0 || j == 0)
+	  {
+	    current[i][j]=1;
+	    previous[i][j]=1;
+	  }
+	else
+	  {
+	    current[i][j]=0;
+	    previous[i][j]=0;
+	  }
+      }
+    }
+
+  puts("sides?");
+  scanf("%f %f %f %f", &top, &right, &bottom, &left);
+  for(i = 0; i <SIZE; i++)
+    {
+      for(j=0; j<SIZE; j++)
+	{
+	  if(j==0)
+	    {
+	      current[i][j]= top;
+	      previous[i][j] = top;
+	    }	  
+	  if(i==9 && j!=0)
+	    {
+	      current[i][j]= right;
+	      previous[i][j]= right;  
+	    }	
+	  if(j==9 && i!=9)
+	    {	
+	      current[i][j]=bottom;
+	      previous[i][j]=bottom;
+	    }
+	  if(i==0 && j!=0)
+	    {
+	      current[i][j]=left;
+	      previous[i][j]=left;
+	    }
+	}
+    }
+  for(k=0; k<iterations; k++)
+    {
+      for(i=1;i<SIZE-1;i++)
+	{
+	  for(j=1;j<SIZE-1;j++)
+	    {
+	      current[i][j] = ((current[i-1][j] + current[i][j+1] + current[i+1][j] + current[i][j-1])/4);
+		}
+	}
+      
+      for(i=1;i<SIZE-1;i++)
+	{
+	  for(j=1;j<SIZE-1;j++)
+	    {
+	      if(current[i][j] - previous[i][j] > errorgood)
+		{
+		  errorgood = current[i][j] - previous[i][j]; 
+		}
+	    }
+	  if(errorgood < epsilon)
+	    break;
+	}
+    }
+  if(errorgood < epsilon)
+    printf("Converged in %d steps\n", k);
+  else
+    printf("No convergence\n");
+
+  for(i=0;i<SIZE;i++)
+    {
+      for(j=0;j<SIZE;j++)
+	{
+	  printf("%.2f ",current[i][j]);
+	}
+      puts("");
+    }
+} 
+	     
